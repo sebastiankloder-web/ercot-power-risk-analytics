@@ -1,0 +1,7 @@
+pandas #math and arrays
+numpy #data manipulation and analysis
+matplotlib #graphing and visualization
+seaborn #stats visualization
+pytest #testing
+jupyter #interactive notebooks
+pyarrow #data formatting and storage
