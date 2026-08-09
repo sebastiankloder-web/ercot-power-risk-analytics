@@ -5,6 +5,7 @@ import pandas as pd
 
 RAW_DIR = Path("data/raw")
 
+## Generates a sample ERCOT Real-Time Market dataset for testing and development. NOT REAL DATA. The generated data is synthetic and does not reflect actual market conditions or prices.
 
 def create_mock_ercot_data(filename="ercot_rtm_sample_2026.csv"):
     """Generates 1 month of 15-minute ERCOT Real-Time Settlement Point Prices
@@ -21,7 +22,7 @@ def create_mock_ercot_data(filename="ercot_rtm_sample_2026.csv"):
     hubs = ["HB_BUSAVG", "HB_NORTH", "HB_WEST", "HB_HOUSTON"]
     records = []
 
-    np.random.seed(42)  # Fixed seed for reproducible sample generation
+    np.random.seed(33)  # Fixed seed for reproducible sample generation
 
     for hub in hubs:
         # Intraday pattern (~$30 average with daytime peak)
