@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pandas as pd
 
 RAW_DIR = Path("data/raw")
@@ -20,19 +21,19 @@ def inspect_raw_files():
         df = pd.read_csv(file_path)
 
         print(f"\n1. Total Records: {len(df):,} rows")
-        print(f"\n2. Columns & Data Types:")
+        print("\n2. Columns & Data Types:")
         print(df.dtypes)
 
-        print(f"\n3. First 3 Sample Rows:")
+        print("\n3. First 3 Sample Rows:")
         print(df.head(3))
 
         if "SettlementPointName" in df.columns:
-            print(f"\n4. Available Trading Hubs / Settlement Points:")
+            print("\n4. Available Trading Hubs / Settlement Points:")
             print(df["SettlementPointName"].unique())
 
         if "SettlementPointPrice" in df.columns:
             prices = df["SettlementPointPrice"]
-            print(f"\n5. Price Distribution Summary ($/MWh):")
+            print("\n5. Price Distribution Summary ($/MWh):")
             print(f"   Min Price:  ${prices.min():.2f}")
             print(f"   Max Price:  ${prices.max():.2f}")
             print(f"   Mean Price: ${prices.mean():.2f}")
