@@ -12,7 +12,8 @@ def test_calculate_max_consecutive():
 def test_tail_concentration_bounds():
     """Verify top 1% and 5% tail concentration ratios are bounded between 0% and 100%."""
     data = pd.DataFrame({"rt_price": [10.0, 20.0, -50.0, 100.0, 500.0, 30.0, 25.0, -10.0, 15.0, 40.0]})
-    summary = analyze_events(data)
+    # Pass save_results=False so unit tests do not overwrite production results tables
+    summary = analyze_events(data, save_results=False)
 
     conc_1 = summary["Top 1% Tail Concentration Ratio (%)"].iloc[0]
     conc_5 = summary["Top 5% Tail Concentration Ratio (%)"].iloc[0]

@@ -11,11 +11,10 @@ FIGURES_DIR = Path("results/figures")
 
 def calculate_max_consecutive(series_bool: pd.Series) -> int:
     """Calculates the maximum consecutive sequence of True values in a boolean Series."""
-    # Group consecutive True values and find max length
     return int((series_bool != series_bool.shift()).cumsum()[series_bool].value_counts().max() if series_bool.any() else 0)
 
 
-def analyze_events(df: pd.DataFrame) -> pd.DataFrame:
+def analyze_events(df: pd.DataFrame, save_results: bool = True) -> pd.DataFrame:
     """Analyzes negative price events, scarcity spikes, and tail concentration ratios."""
     prices = df["rt_price"].dropna()
     total_hours = len(prices)
@@ -23,16 +22,16 @@ def analyze_events(df: pd.DataFrame) -> pd.DataFrame:
     # 1. Negative Price Analysis (< $0/MWh)
     is_neg = prices < 0
     neg_count = is_neg.sum()
-    neg_freq = (neg_count / total_hours) * 100
+    neg_freq = (neg_count / total_hours) * 100 if total_hours > 0 else 0
     max_neg_run = calculate_max_consecutive(is_neg)
-    min_price = prices.min()
+    min_price = prices.min() if total_hours > 0 else 0
 
-    # 2. Scarcity Spike Analysis (> $100/MWh and > $250/MWh)
+    # 2. Scarcity Spike Analysis (> $100/MWh)
     is_spike_100 = prices > 100
     spike_100_count = is_spike_100.sum()
-    spike_100_freq = (spike_100_count / total_hours) * 100
+    spike_100_freq = (spike_100_count / total_hours) * 100 if total_hours > 0 else 0
     max_spike_run = calculate_max_consecutive(is_spike_100)
-    max_price = prices.max()
+    max_price = prices.max() if total_hours > 0 else 0
 
     # 3. Tail Concentration Ratios
     abs_prices = prices.abs().sort_values(ascending=False)
@@ -41,8 +40,8 @@ def analyze_events(df: pd.DataFrame) -> pd.DataFrame:
     top_1_pct_count = max(1, int(np.ceil(0.01 * total_hours)))
     top_5_pct_count = max(1, int(np.ceil(0.05 * total_hours)))
 
-    conc_1_pct = (abs_prices.iloc[:top_1_pct_count].sum() / total_abs_sum) * 100
-    conc_5_pct = (abs_prices.iloc[:top_5_pct_count].sum() / total_abs_sum) * 100
+    conc_1_pct = (abs_prices.iloc[:top_1_pct_count].sum() / total_abs_sum * 100) if total_abs_sum > 0 else 0
+    conc_5_pct = (abs_prices.iloc[:top_5_pct_count].sum() / total_abs_sum * 100) if total_abs_sum > 0 else 0
 
     metrics = {
         "Total Hours Evaluated": total_hours,
@@ -60,8 +59,10 @@ def analyze_events(df: pd.DataFrame) -> pd.DataFrame:
 
     summary_df = pd.DataFrame([metrics])
 
-    TABLES_DIR.mkdir(parents=True, exist_ok=True)
-    summary_df.to_csv(TABLES_DIR / "event_analysis_summary.csv", index=False)
+    if save_results:
+        TABLES_DIR.mkdir(parents=True, exist_ok=True)
+        summary_df.to_csv(TABLES_DIR / "event_analysis_summary.csv", index=False)
+
     return summary_df
 
 
@@ -70,6 +71,9 @@ def plot_tail_concentration(df: pd.DataFrame):
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
     prices = df["rt_price"].dropna().abs().sort_values(ascending=False).values
+    if len(prices) == 0:
+        return
+
     cum_prices = np.cumsum(prices) / np.sum(prices) * 100
     cum_hours = (np.arange(1, len(prices) + 1) / len(prices)) * 100
 
@@ -77,8 +81,7 @@ def plot_tail_concentration(df: pd.DataFrame):
     plt.plot(cum_hours, cum_prices, color="#d62728", linewidth=2.5, label="ERCOT Price Magnitude Concentration")
     plt.plot([0, 100], [0, 100], color="black", linestyle="--", alpha=0.6, label="Uniform Distribution (Baseline)")
 
-    # Highlight Top 5% point
-    top_5_idx = int(np.ceil(0.05 * len(prices))) - 1
+    top_5_idx = max(0, int(np.ceil(0.05 * len(prices))) - 1)
     plt.scatter([cum_hours[top_5_idx]], [cum_prices[top_5_idx]], color="blue", s=80, zorder=5)
     plt.annotate(
         f"Top 5% Hours = {cum_prices[top_5_idx]:.1f}% Total Magnitude",
@@ -100,15 +103,13 @@ def plot_tail_concentration(df: pd.DataFrame):
     plt.savefig(FIGURES_DIR / "04_tail_concentration.png", dpi=300)
     plt.close()
 
-    print(f"[SUCCESS] Saved tail concentration curve to: {FIGURES_DIR / '04_tail_concentration.png'}")
-
 
 def run_event_analysis():
     if not PROCESSED_FILE.exists():
         raise FileNotFoundError("Processed dataset missing. Run src/data_cleaning.py first.")
 
     df = pd.read_csv(PROCESSED_FILE, parse_dates=["timestamp"])
-    summary_df = analyze_events(df)
+    summary_df = analyze_events(df, save_results=True)
 
     print("\n==========================================")
     print("EXTREME EVENT & TAIL CONCENTRATION SUMMARY")
