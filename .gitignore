@@ -1,20 +1,5 @@
-# Virtual Environments
-venv/
-.venv/
-
-# Python Cache
+﻿venv/
 __pycache__/
-*.py[cod]
+*.pyc
 .pytest_cache/
-
-# Local Data Dumps
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-
-# IDE & OS files
 .vscode/
-.ipynb_checkpoints/
-Thumbs.db
-desktop.ini
