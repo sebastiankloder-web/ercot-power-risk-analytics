@@ -1,2 +1,2 @@
 Total Hours Evaluated,Negative Price Hours (< $0),Negative Price Frequency (%),Max Consecutive Negative Hours,Min Observed Price ($/MWh),Spike Hours (> $100/MWh),Spike Frequency (%),Max Consecutive Spike Hours,Max Observed Price ($/MWh),Top 1% Tail Concentration Ratio (%),Top 5% Tail Concentration Ratio (%)
-10,2,20.0,1,-50.0,1,10.0,1,500.0,62.5,62.5
+155,0,0.0,0,13.14,0,0.0,0,91.14,3.74,12.71

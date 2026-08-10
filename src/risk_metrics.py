@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 PROCESSED_FILE = Path("data/processed/hourly_prices.csv")
