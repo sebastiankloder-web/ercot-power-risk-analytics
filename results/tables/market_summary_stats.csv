@@ -1,2 +1,2 @@
 Total Hourly Rows,Mean Price ($/MWh),Median Price ($/MWh),Std Dev ($/MWh),Min Price ($/MWh),Max Price ($/MWh),Negative Price Count,Negative Price Frequency (%),Spike Count (> $100/MWh),Spike Frequency (%)
-146,26.2,25.22,11.93,1.12,60.41,0,0.0,0,0.0
+145,24.7,23.27,11.71,1.12,60.41,0,0.0,0,0.0
